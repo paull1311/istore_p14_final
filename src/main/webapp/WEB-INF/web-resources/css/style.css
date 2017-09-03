@@ -1,0 +1,154 @@
+body {
+    position: relative;
+    font-family: 'SF Pro Text', 'Myriad Set Pro', 'SF Pro Icons', 'Apple Legacy Chevron', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 17px;
+    color: #333333;
+}
+
+a,
+.btn-link {
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+label {
+    display: block;
+    padding-top: 6px;
+    font-weight: bold;
+}
+
+#main {
+    /*height: 100vmin;*/
+    /*min-height: 100%;*/
+
+}
+
+header#header,
+footer#footer {
+    width: 100%;
+    position: absolute;
+    left: 0;
+}
+
+header#header {
+    height: 48px;
+    padding: 5px 0;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #ffffff;
+}
+
+footer#footer {
+    height: 30px;
+    bottom: 0;
+    background-color: #f2f2f2;
+    padding: 8px 0;
+    font-size: 14px;
+    line-height: 1;
+    color: #555555;
+}
+
+#main > .row {
+    min-height: 100vh;
+    padding-top: 48px;
+    padding-bottom: 50px;
+}
+
+header#header .nav {
+    margin-top: -1px;
+}
+
+header#header .nav .nav-link,
+header#header .btn-link {
+    color: inherit;
+}
+
+header#header .nav .nav-link:hover,
+header#header .btn-link:hover {
+    opacity: .65;
+    text-decoration: none;
+}
+
+#catalog {
+
+}
+
+.product > img {
+    width: 100%;
+}
+
+.product {
+    display: block;
+    font-size: 14px;
+    text-decoration: none;
+    margin: 0 0 20px;
+    padding: 10px;
+}
+
+.product:hover {
+    text-decoration: none;
+    background-color: rgba(0,0,0,0.05);
+    color: inherit;
+}
+
+.product span {
+    display: block;
+}
+
+.product .info {
+    padding: 10px;
+}
+
+.product h3 {
+    font-size: 20px;
+    text-align: center;
+}
+
+.product .price {
+    color: #dc3545;
+    font-size: 16px;
+    text-align: center;
+}
+
+#product .price {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.comment {
+    margin-top: 20px;
+}
+
+.comment .date {
+    font-size: 14px;
+}
+
+#cart .table td {
+    vertical-align: middle;
+}
+
+#cart form {
+    margin-bottom: 0;
+    display: inline-block;
+}
+
+#admin-list td {
+    vertical-align: middle;
+}
+
+@media screen and (max-width: 576px) {
+    #main > .row {
+        padding-bottom: 64px;
+    }
+
+    footer#footer {
+        height: 44px;
+    }
+
+    .product {
+        text-align: center;
+    }
+}

@@ -1,0 +1,671 @@
+Index: src/main/java/edu/bionic/dao/OrderDao.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/edu/bionic/dao/OrderDao.java	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/main/java/edu/bionic/dao/OrderDao.java	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -8,5 +8,7 @@
+ 
+     List<Order> getAll();
+ 
++    List<Order> getAllByUser(int userId);
++
+     Order save(Order order);
+ }
+Index: src/main/java/edu/bionic/dao/jdbc/JdbcOrderDao.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/edu/bionic/dao/jdbc/JdbcOrderDao.java	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/main/java/edu/bionic/dao/jdbc/JdbcOrderDao.java	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -6,10 +6,8 @@
+ import org.springframework.jdbc.core.BeanPropertyRowMapper;
+ import org.springframework.jdbc.core.JdbcTemplate;
+ import org.springframework.jdbc.core.RowMapper;
+-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+ import org.springframework.stereotype.Repository;
+ import org.springframework.transaction.annotation.Transactional;
+@@ -52,9 +50,25 @@
+         return orders;
+     }
+ 
++    @Override
++    public List<Order> getAllByUser(int userId) {
++        String sql = "SELECT * FROM orders WHERE user_id = ?";
++        List<Order> orders = jdbcTemplate.query(sql, new Object[]{userId}, ROW_MAPPER);
++        orders.forEach(order -> order.setProducts(jdbcProductDao.getByOrder(order.getId())));
++        return orders;
++    }
++
+     @Override
+     public Order save(Order order) {
+-        SqlParameterSource orderParameterSource = new BeanPropertySqlParameterSource(order);
++        MapSqlParameterSource orderParameterSource = new MapSqlParameterSource()
++                .addValue("total_amount", order.getTotalAmount())
++                .addValue("datetime", order.getDateTime())
++                .addValue("name", order.getName())
++                .addValue("email", order.getEmail())
++                .addValue("phone", order.getPhone())
++                .addValue("address", order.getAddress())
++                .addValue("user_id", order.getUser() != null ?
++                        order.getUser().getId() : null);
+         Number newId = orderInsert.executeAndReturnKey(orderParameterSource);
+         order.setId(newId.intValue());
+ 
+Index: src/main/java/edu/bionic/dao/jpa/JpaOrderDao.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/edu/bionic/dao/jpa/JpaOrderDao.java	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/main/java/edu/bionic/dao/jpa/JpaOrderDao.java	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -22,6 +22,13 @@
+                 .getResultList();
+     }
+ 
++    @Override
++    public List<Order> getAllByUser(int userId) {
++        return entityManager.createQuery("SELECT o FROM Order o WHERE o.user.id = :userId", Order.class)
++                .setParameter("userId", userId)
++                .getResultList();
++    }
++
+     @Override
+     @Transactional
+     public Order save(Order order) {
+Index: src/main/java/edu/bionic/dao/mock/OrderDaoMock.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/edu/bionic/dao/mock/OrderDaoMock.java	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/main/java/edu/bionic/dao/mock/OrderDaoMock.java	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -21,6 +21,11 @@
+         return order;
+     }
+ 
++    @Override
++    public List<Order> getAllByUser(int userId) {
++        return null;
++    }
++
+     public void initOrderStorage() {
+         orderStorage = new ArrayList<>();
+     }
+Index: src/main/java/edu/bionic/domain/Order.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/edu/bionic/domain/Order.java	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/main/java/edu/bionic/domain/Order.java	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -41,6 +41,10 @@
+     @NotBlank(message = "Это поле должно быть заполнено")
+     private String address;
+ 
++    @ManyToOne(fetch = FetchType.LAZY)
++    @JoinColumn(name = "user_id")
++    private User user;
++
+ 
+     public Order() {
+         this.products = new ArrayList<>();
+@@ -52,7 +56,7 @@
+         this.products = new ArrayList<>(products);
+     }
+ 
+-    public Order(Integer id, LocalDateTime dateTime, BigDecimal totalAmount, List<Product> products, String name, String email, String phone, String address) {
++    public Order(Integer id, LocalDateTime dateTime, BigDecimal totalAmount, List<Product> products, String name, String email, String phone, String address, User user) {
+         this.id = id;
+         this.dateTime = dateTime;
+         this.totalAmount = totalAmount.setScale(2, BigDecimal.ROUND_HALF_UP);
+@@ -61,6 +65,7 @@
+         this.email = email;
+         this.phone = phone;
+         this.address = address;
++        this.user = user;
+     }
+ 
+     @Override
+@@ -172,4 +177,12 @@
+     public void setEmail(String email) {
+         this.email = email;
+     }
++
++    public User getUser() {
++        return user;
++    }
++
++    public void setUser(User user) {
++        this.user = user;
++    }
+ }
+Index: src/main/java/edu/bionic/presentation/controller/OrderController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/edu/bionic/presentation/controller/OrderController.java	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/main/java/edu/bionic/presentation/controller/OrderController.java	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -2,6 +2,7 @@
+ 
+ import edu.bionic.domain.Order;
+ import edu.bionic.service.OrderService;
++import edu.bionic.service.UserService;
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.stereotype.Controller;
+ import org.springframework.ui.Model;
+@@ -20,15 +21,19 @@
+     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d-MM-yyyy HH:mm");
+ 
+     private OrderService orderService;
++    private UserService userService;
+ 
+     @Autowired
+-    public OrderController(OrderService orderService) {
++    public OrderController(OrderService orderService,
++                           UserService userService) {
+         this.orderService = orderService;
++        this.userService = userService;
+     }
+ 
+     @GetMapping
+-    public String showOrders(Model model) {
+-        model.addAttribute("orders", orderService.getAll());
++    public String showOrdersForUser(Model model) {
++
++        model.addAttribute("orders", orderService.getAllByAuthUser());
+         model.addAttribute("dateTimeFormatter", dateTimeFormatter);
+ 
+         return "order/order-list";
+@@ -36,6 +41,11 @@
+ 
+     @GetMapping("newOrder")
+     public String showNewOrderPage(@ModelAttribute("currentOrder") Order basket) {
++        userService.getAuthenticatedUser().ifPresent(user -> {
++            basket.setName(user.getName());
++            basket.setEmail(user.getEmail());
++        });
++
+         return "order/newOrder";
+     }
+ 
+@@ -54,7 +64,7 @@
+ 
+     @PostMapping("newOrder/removeProduct")
+     public String removeItemFromOrder(@SessionAttribute("currentOrder") Order currentOrder,
+-                                      @RequestParam("index") Integer index){
++                                      @RequestParam("index") Integer index) {
+         orderService.removeProductFromOrder(currentOrder, index);
+ 
+         return "redirect:/orders/newOrder";
+Index: src/main/java/edu/bionic/service/OrderService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/edu/bionic/service/OrderService.java	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/main/java/edu/bionic/service/OrderService.java	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -2,6 +2,7 @@
+ 
+ import edu.bionic.domain.Order;
+ import edu.bionic.domain.Product;
++import edu.bionic.domain.User;
+ 
+ import java.util.List;
+ 
+@@ -9,6 +10,8 @@
+ 
+     List<Order> getAll();
+ 
++    List<Order> getAllByAuthUser();
++
+     void createNewOrder(Order order);
+ 
+     void addProductToOrder(Order order, Integer productId);
+Index: src/main/java/edu/bionic/service/UserService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/edu/bionic/service/UserService.java	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/main/java/edu/bionic/service/UserService.java	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -2,7 +2,11 @@
+ 
+ import edu.bionic.domain.User;
+ 
++import java.util.Optional;
++
+ public interface UserService {
+ 
+     User registerNewUser(User user);
++
++    Optional<User> getAuthenticatedUser();
+ }
+Index: src/main/java/edu/bionic/service/impl/OrderServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/edu/bionic/service/impl/OrderServiceImpl.java	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/main/java/edu/bionic/service/impl/OrderServiceImpl.java	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -3,8 +3,11 @@
+ import edu.bionic.dao.OrderDao;
+ import edu.bionic.domain.Order;
+ import edu.bionic.domain.Product;
++import edu.bionic.domain.User;
+ import edu.bionic.service.OrderService;
+ import edu.bionic.service.ProductService;
++import edu.bionic.service.UserService;
++import edu.bionic.util.exception.AccessDeniedException;
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.stereotype.Service;
+ 
+@@ -16,12 +19,17 @@
+ public class OrderServiceImpl implements OrderService {
+ 
+     private OrderDao orderDao;
++
+     private ProductService productService;
++    private UserService userService;
+ 
+     @Autowired
+-    public OrderServiceImpl(OrderDao orderDao, ProductService productService) {
++    public OrderServiceImpl(OrderDao orderDao,
++                            ProductService productService,
++                            UserService userService) {
+         this.orderDao = orderDao;
+         this.productService = productService;
++        this.userService = userService;
+     }
+ 
+     @Override
+@@ -29,9 +37,18 @@
+         return orderDao.getAll();
+     }
+ 
++    @Override
++    public List<Order> getAllByAuthUser() {
++        User authUser = userService.getAuthenticatedUser()
++                .orElseThrow(() -> new AccessDeniedException("User are not authorized"));
++
++        return orderDao.getAllByUser(authUser.getId());
++    }
++
+     @Override
+     public void createNewOrder(Order order) {
+         order.setDateTime(LocalDateTime.now());
++        order.setUser(userService.getAuthenticatedUser().orElse(null));
+         orderDao.save(order);
+     }
+ 
+Index: src/main/java/edu/bionic/service/impl/UserServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/edu/bionic/service/impl/UserServiceImpl.java	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/main/java/edu/bionic/service/impl/UserServiceImpl.java	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -6,6 +6,7 @@
+ import edu.bionic.dto.LoggedUser;
+ import edu.bionic.service.UserService;
+ import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
++import org.springframework.security.core.Authentication;
+ import org.springframework.security.core.context.SecurityContextHolder;
+ import org.springframework.security.core.userdetails.UserDetails;
+ import org.springframework.security.core.userdetails.UserDetailsService;
+@@ -49,4 +50,13 @@
+         Optional<User> user = userDao.getByEmail(username);
+         return user.map(LoggedUser::new).orElse(null);
+     }
++
++    @Override
++    public Optional<User> getAuthenticatedUser() {
++        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
++        if (authentication.getPrincipal() instanceof LoggedUser) {
++            return Optional.of(((LoggedUser) authentication.getPrincipal()).getUser());
++        }
++        return Optional.empty();
++    }
+ }
+Index: src/main/java/edu/bionic/util/exception/AccessDeniedException.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/edu/bionic/util/exception/AccessDeniedException.java	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
++++ src/main/java/edu/bionic/util/exception/AccessDeniedException.java	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -0,0 +1,8 @@
++package edu.bionic.util.exception;
++
++public class AccessDeniedException extends RuntimeException {
++
++    public AccessDeniedException(String message) {
++        super(message);
++    }
++}
+Index: src/main/resources/db/fillDB.sql
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/db/fillDB.sql	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/main/resources/db/fillDB.sql	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -1,10 +1,10 @@
+-DELETE FROM users;
+-ALTER SEQUENCE users_id_seq RESTART WITH 1;
+ DELETE FROM comments;
+ ALTER SEQUENCE comments_id_seq RESTART WITH 1;
+ DELETE FROM orders_products;
+ DELETE FROM orders;
+ ALTER SEQUENCE orders_id_seq RESTART WITH 1;
++DELETE FROM users;
++ALTER SEQUENCE users_id_seq RESTART WITH 1;
+ DELETE FROM products;
+ ALTER SEQUENCE products_id_seq RESTART WITH 1;
+ 
+@@ -21,10 +21,15 @@
+ INSERT INTO products (name, price, color, capacity, display, description)
+ VALUES ('iPhone 8 Plus', 900, 1, 128, '5,5 inch', NULL);
+ 
+-INSERT INTO orders (total_amount, datetime, name, email, phone, address)
+-VALUES (1500, '2017-06-01 14:00:00', 'Олег', 'oleg@gmail.com', '095664356273', 'ул. Дорогожицкая, 1');
+-INSERT INTO orders (total_amount, datetime, name, email, phone, address)
+-VALUES (2200, '2017-07-23 18:00:00', 'Аня', 'anya@gmail.com', '095664357685', 'ул. Артема, 30');
++INSERT INTO users (email, password, name, role)
++VALUES ('admin@mail.com', '$2a$10$8IHi8NJot3CY5BDlHrivr.cVMJwtznYTNli3p7GcgwOtsF8VxgMWK', 'Administrator', 0);
++INSERT INTO users (email, password, name, role)
++VALUES ('user@mail.com', '$2a$10$PgBb/VbejOXpdopzGU3AquVu9LDr9PhQ0fcBiGIYsVQeKB.p/paQm', 'Username', 1);
++
++INSERT INTO orders (total_amount, datetime, name, email, phone, address, user_id)
++VALUES (1500, '2017-06-01 14:00:00', 'Олег', 'oleg@gmail.com', '095664356273', 'ул. Дорогожицкая, 1', 2);
++INSERT INTO orders (total_amount, datetime, name, email, phone, address, user_id)
++VALUES (2200, '2017-07-23 18:00:00', 'Аня', 'anya@gmail.com', '095664357685', 'ул. Артема, 30', null);
+ 
+ INSERT INTO orders_products (order_id, product_id) VALUES (1, 1);
+ INSERT INTO orders_products (order_id, product_id) VALUES (1, 5);
+@@ -37,9 +42,4 @@
+ INSERT INTO comments (product_id, author, datetime, text, rating)
+ VALUES (4, 'Анна', '2017-03-12 15:00:00', 'Возникли проблемы на второй месяц использования. Пропадает зук в динамиках', 3);
+ INSERT INTO comments (product_id, author, datetime, text, rating)
+-VALUES (1, 'Инна', '2017-04-05 10:30:00', 'Хоший телефон. Единственный недостаток это цена :(', 4);
+-
+-INSERT INTO users (email, password, name, role)
+-VALUES ('admin@mail.com', '$2a$10$8IHi8NJot3CY5BDlHrivr.cVMJwtznYTNli3p7GcgwOtsF8VxgMWK', 'Administrator', 0);
+-INSERT INTO users (email, password, name, role)
+-VALUES ('user@mail.com', '$2a$10$PgBb/VbejOXpdopzGU3AquVu9LDr9PhQ0fcBiGIYsVQeKB.p/paQm', 'Username', 1);
+\ No newline at end of file
++VALUES (1, 'Инна', '2017-04-05 10:30:00', 'Хоший телефон. Единственный недостаток это цена :(', 4);
+\ No newline at end of file
+Index: src/main/resources/db/initDB_hsql.sql
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/db/initDB_hsql.sql	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/main/resources/db/initDB_hsql.sql	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -1,10 +1,10 @@
+-DROP TABLE IF EXISTS users;
+-DROP SEQUENCE IF EXISTS users_id_seq;
+ DROP TABLE IF EXISTS comments;
+ DROP SEQUENCE IF EXISTS comments_id_seq;
+ DROP TABLE IF EXISTS orders_products;
+ DROP TABLE IF EXISTS orders;
+ DROP SEQUENCE IF EXISTS orders_id_seq;
++DROP TABLE IF EXISTS users;
++DROP SEQUENCE IF EXISTS users_id_seq;
+ DROP TABLE IF EXISTS products;
+ DROP SEQUENCE IF EXISTS products_id_seq;
+ 
+@@ -19,6 +19,15 @@
+   description LONGVARCHAR
+ );
+ 
++CREATE SEQUENCE users_id_seq AS INTEGER START WITH 1;
++CREATE TABLE users (
++  id          INTEGER GENERATED BY DEFAULT AS SEQUENCE users_id_seq PRIMARY KEY,
++  email       LONGVARCHAR NOT NULL UNIQUE,
++  password    LONGVARCHAR NOT NULL,
++  name        LONGVARCHAR NOT NULL,
++  role        INTEGER NOT NULL
++);
++
+ CREATE SEQUENCE orders_id_seq AS INTEGER START WITH 1;
+ CREATE TABLE orders (
+   id            INTEGER GENERATED BY DEFAULT AS SEQUENCE orders_id_seq PRIMARY KEY,
+@@ -27,7 +36,9 @@
+   name          LONGVARCHAR NOT NULL,
+   email         LONGVARCHAR NOT NULL,
+   phone         LONGVARCHAR,
+-  address       LONGVARCHAR NOT NULL
++  address       LONGVARCHAR NOT NULL,
++  user_id       INTEGER,
++  FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL
+ );
+ 
+ CREATE TABLE orders_products (
+@@ -46,13 +57,4 @@
+   text        LONGVARCHAR,
+   rating      INTEGER,
+   FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE
+-);
+-
+-CREATE SEQUENCE users_id_seq AS INTEGER START WITH 1;
+-CREATE TABLE users (
+-  id          INTEGER GENERATED BY DEFAULT AS SEQUENCE users_id_seq PRIMARY KEY,
+-  email       LONGVARCHAR NOT NULL UNIQUE,
+-  password    LONGVARCHAR NOT NULL,
+-  name        LONGVARCHAR NOT NULL,
+-  role        INTEGER NOT NULL
+ );
+\ No newline at end of file
+Index: src/main/resources/db/initDB_postgres.sql
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/db/initDB_postgres.sql	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/main/resources/db/initDB_postgres.sql	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -1,7 +1,7 @@
+-DROP TABLE IF EXISTS users;
+ DROP TABLE IF EXISTS comments;
+ DROP TABLE IF EXISTS orders_products;
+ DROP TABLE IF EXISTS orders;
++DROP TABLE IF EXISTS users;
+ DROP TABLE IF EXISTS products;
+ 
+ CREATE TABLE products (
+@@ -14,6 +14,14 @@
+   description TEXT
+ );
+ 
++CREATE TABLE users (
++  id          SERIAL PRIMARY KEY,
++  email       TEXT NOT NULL UNIQUE,
++  password    TEXT NOT NULL,
++  name        TEXT NOT NULL,
++  role        INTEGER NOT NULL
++);
++
+ CREATE TABLE orders (
+   id            SERIAL PRIMARY KEY,
+   total_amount  NUMERIC(10,2) NOT NULL,
+@@ -21,7 +29,9 @@
+   name          TEXT NOT NULL,
+   email         TEXT NOT NULL,
+   phone         TEXT,
+-  address       TEXT NOT NULL
++  address       TEXT NOT NULL,
++  user_id       INTEGER,
++  FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL
+ );
+ 
+ CREATE TABLE orders_products (
+@@ -39,12 +49,4 @@
+   text        TEXT,
+   rating      INTEGER,
+   FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE
+-);
+-
+-CREATE TABLE users (
+-  id          SERIAL PRIMARY KEY,
+-  email       TEXT NOT NULL UNIQUE,
+-  password    TEXT NOT NULL,
+-  name        TEXT NOT NULL,
+-  role        INTEGER NOT NULL
+ );
+\ No newline at end of file
+Index: src/main/webapp/WEB-INF/views/components/header.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/webapp/WEB-INF/views/components/header.jsp	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/main/webapp/WEB-INF/views/components/header.jsp	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -10,6 +10,11 @@
+     <a href="<c:url value="/products"/> ">
+         Товары
+     </a>
++    <sec:authorize url="/orders">
++        <a href="<c:url value="/orders"/> ">
++            Предыдущие заказы
++        </a>
++    </sec:authorize>
+ 
+     <sec:authorize access="isAuthenticated()">
+         <form:form servletRelativeAction="/logout" cssStyle="float: right">
+Index: src/main/webapp/WEB-INF/views/index.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/webapp/WEB-INF/views/index.jsp	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/main/webapp/WEB-INF/views/index.jsp	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -7,9 +7,5 @@
+ <body>
+ <jsp:include page="components/header.jsp"/>
+ <h1>Добро пожаловать в мазазин iShop</h1>
+-<ul>
+-    <li><a href="<c:url value="/products"/>">Каталог товаров</a></li>
+-    <li><a href="<c:url value="/orders"/> ">Предыдущие заказы</a></li>
+-</ul>
+ </body>
+ </html>
+Index: src/test/java/edu/bionic/dao/OrderDaoTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/test/java/edu/bionic/dao/OrderDaoTest.java	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/test/java/edu/bionic/dao/OrderDaoTest.java	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -1,6 +1,8 @@
+ package edu.bionic.dao;
+ 
+ import edu.bionic.domain.Order;
++import edu.bionic.testdata.OrderFactory;
++import edu.bionic.testdata.UserFactory;
+ import org.junit.Assert;
+ import org.junit.Test;
+ import org.springframework.beans.factory.annotation.Autowired;
+@@ -8,7 +10,8 @@
+ import java.util.List;
+ 
+ import static edu.bionic.testdata.OrderFactory.getAllOrders;
+-import static edu.bionic.testdata.OrderFactory.getNewOrder;
++import static edu.bionic.testdata.OrderFactory.getAllOrdersForUser;
++import static edu.bionic.testdata.OrderFactory.getNewOrderForUser;
+ 
+ public class OrderDaoTest extends BaseDaoTest {
+ 
+@@ -23,16 +26,24 @@
+         Assert.assertEquals(expected.toString(), actual.toString());
+     }
+ 
++    @Test
++    public void getAllByUser() throws Exception {
++        List<Order> expected = getAllOrdersForUser();
++        List<Order> actual = orderDao.getAllByUser(UserFactory.getUser().getId());
++
++        Assert.assertEquals(expected.toString(), actual.toString());
++    }
++
+     @Test
+     public void save() throws Exception {
+-        Order newOrder = getNewOrder();
++        Order newOrder = getNewOrderForUser();
+         Order savedOrder = orderDao.save(newOrder);
+         newOrder.setId(savedOrder.getId());
+ 
+-        List<Order> expected = getAllOrders();
++        List<Order> expected = OrderFactory.getAllOrdersForUser();
+         expected.add(newOrder);
+ 
+-        List<Order> actual = orderDao.getAll();
++        List<Order> actual = orderDao.getAllByUser(UserFactory.getUser().getId());
+ 
+         Assert.assertEquals(expected.toString(), actual.toString());
+     }
+Index: src/test/java/edu/bionic/testdata/OrderFactory.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/test/java/edu/bionic/testdata/OrderFactory.java	(revision e693eb7959062b1cf501a543af62abdceafb42ee)
++++ src/test/java/edu/bionic/testdata/OrderFactory.java	(revision 6150d8fb413a5e09e232a4f8b6b54c791e7f14a4)
+@@ -2,6 +2,7 @@
+ 
+ import com.google.common.collect.Lists;
+ import edu.bionic.domain.Order;
++import edu.bionic.domain.User;
+ 
+ import java.math.BigDecimal;
+ import java.time.LocalDateTime;
+@@ -19,7 +20,8 @@
+                 "Олег",
+                 "oleg@gmail.com",
+                 "095664356273",
+-                "ул. Дорогожицкая, 1"
++                "ул. Дорогожицкая, 1",
++                UserFactory.getUser()
+         );
+     }
+ 
+@@ -32,7 +34,8 @@
+                 "Аня",
+                 "anya@gmail.com",
+                 "095664357685",
+-                "ул. Артема, 30"
++                "ул. Артема, 30",
++                null
+         );
+     }
+ 
+@@ -40,7 +43,11 @@
+         return Lists.newArrayList(getOrder1(), getOrder2());
+     }
+ 
+-    public static Order getNewOrder() {
++    public static List<Order> getAllOrdersForUser() {
++        return Lists.newArrayList(getOrder1());
++    }
++
++    public static Order getNewOrderForUser() {
+         return new Order(
+                 null,
+                 LocalDateTime.of(2017, Month.AUGUST, 11, 11, 11),
+@@ -49,7 +56,8 @@
+                 "Игорь",
+                 "ihor@gmail.com",
+                 "0956644347685",
+-                "ул. Артема, 31"
++                "ул. Артема, 31",
++                UserFactory.getUser()
+         );
+     }
+ 
