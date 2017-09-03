@@ -3,16 +3,7 @@ DROP TABLE IF EXISTS orders_products;
 DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS operations;
-
-CREATE TABLE operations (
-  id          SERIAL PRIMARY KEY,
-  name        TEXT NOT NULL,
-  value       NUMERIC(10,2),
-  datetime    TIMESTAMP WITH TIME ZONE NOT NULL,
-  capacity    INTEGER,
-  display     TEXT,
-  description TEXT
-);
+DROP TABLE IF EXISTS accounts;
 
 CREATE TABLE users (
   id          SERIAL PRIMARY KEY,
@@ -20,6 +11,22 @@ CREATE TABLE users (
   password    TEXT NOT NULL,
   name        TEXT NOT NULL,
   role        INTEGER NOT NULL
+);
+
+CREATE TABLE accounts (
+  id          SERIAL PRIMARY KEY,
+  name        TEXT NOT NULL,
+  user_id     INTEGER,
+  FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL
+);
+
+CREATE TABLE operations (
+  id          SERIAL PRIMARY KEY,
+  name        TEXT NOT NULL,
+  value       NUMERIC(10,2),
+  datetime    TIMESTAMP WITH TIME ZONE NOT NULL,
+  account_id       INTEGER,
+  FOREIGN KEY (account_id) REFERENCES accounts (id) ON DELETE SET NULL
 );
 
 CREATE TABLE orders (
@@ -34,11 +41,11 @@ CREATE TABLE orders (
   FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL
 );
 
-CREATE TABLE orders_products (
-  order_id    INTEGER NOT NULL,
-  product_id  INTEGER NOT NULL,
-  FOREIGN KEY (order_id) REFERENCES orders (id) ON DELETE CASCADE,
-  FOREIGN KEY (product_id) REFERENCES operations (id) ON DELETE CASCADE
+CREATE TABLE users_operations (
+  user_id    INTEGER NOT NULL,
+  operation_id  INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+  FOREIGN KEY (operation_id) REFERENCES operations (id) ON DELETE CASCADE
 );
 
 CREATE TABLE comments (
