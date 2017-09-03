@@ -2,7 +2,7 @@ package edu.bionic.presentation.controller;
 
 import edu.bionic.domain.Comment;
 import edu.bionic.domain.Order;
-import edu.bionic.dto.ProductSort;
+import edu.bionic.dto.OperationSort;
 import edu.bionic.service.CommentService;
 import edu.bionic.service.OrderService;
 import edu.bionic.service.ProductService;
@@ -38,11 +38,11 @@ public class ProductController {
                                @RequestParam(value = "name", required = false) String name,
                                @RequestParam(value = "min", required = false) BigDecimal min,
                                @RequestParam(value = "max", required = false) BigDecimal max,
-                               @RequestParam(value = "sort", required = false) ProductSort sort,
+                               @RequestParam(value = "sort", required = false) OperationSort sort,
                                @RequestParam(value = "page", defaultValue = "1") int page) {
         int offset = (page - 1) * PAGE_SIZE;
         int limit = PAGE_SIZE;
-        if (sort == null) sort = ProductSort.NAME_ASC;
+        if (sort == null) sort = OperationSort.NAME_ASC;
         model.addAttribute("products", productService.getAll(name, min, max, sort, offset, limit));
         model.addAttribute("productCount", productService.getCount(name, min, max));
         model.addAttribute("pageSize", PAGE_SIZE);

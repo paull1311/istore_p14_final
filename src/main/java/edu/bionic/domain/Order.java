@@ -1,8 +1,6 @@
 package edu.bionic.domain;
 
 import com.google.common.collect.ImmutableList;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -27,7 +25,7 @@ public class Order {
     @JoinTable(name = "orders_products",
             joinColumns = @JoinColumn(name = "order_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id"))
-    private List<Product> products;
+    private List<Operation> operations;
 
     @NotBlank(message = "Имя не должно быть пустым")
     private String name;
@@ -47,20 +45,20 @@ public class Order {
 
 
     public Order() {
-        this.products = new ArrayList<>();
+        this.operations = new ArrayList<>();
     }
 
-    public Order(LocalDateTime dateTime, BigDecimal totalAmount, List<Product> products) {
+    public Order(LocalDateTime dateTime, BigDecimal totalAmount, List<Operation> operations) {
         this.dateTime = dateTime;
         this.totalAmount = totalAmount;
-        this.products = new ArrayList<>(products);
+        this.operations = new ArrayList<>(operations);
     }
 
-    public Order(Integer id, LocalDateTime dateTime, BigDecimal totalAmount, List<Product> products, String name, String email, String phone, String address, User user) {
+    public Order(Integer id, LocalDateTime dateTime, BigDecimal totalAmount, List<Operation> operations, String name, String email, String phone, String address, User user) {
         this.id = id;
         this.dateTime = dateTime;
         this.totalAmount = totalAmount.setScale(2, BigDecimal.ROUND_HALF_UP);
-        this.products = products;
+        this.operations = operations;
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -94,7 +92,7 @@ public class Order {
                 "id=" + id +
                 ", dateTime=" + dateTime +
                 ", totalAmount=" + totalAmount +
-                ", products=" + products +
+                ", operations=" + operations +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
@@ -126,24 +124,24 @@ public class Order {
         this.totalAmount = totalAmount.setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
-    public List<Product> getProducts() {
-        return ImmutableList.copyOf(products);
+    public List<Operation> getOperations() {
+        return ImmutableList.copyOf(operations);
     }
 
-    public void setProducts(List<Product> products) {
-        this.products = products;
+    public void setOperations(List<Operation> operations) {
+        this.operations = operations;
     }
 
-    public void addProduct(Product product) {
-        products.add(product);
+    public void addProduct(Operation operation) {
+        operations.add(operation);
     }
 
-    public void removeProduct(Product product) {
-        products.remove(product);
+    public void removeProduct(Operation operation) {
+        operations.remove(operation);
     }
 
     public void removeProduct(int index) {
-        products.remove(index);
+        operations.remove(index);
     }
 
     public String getName() {

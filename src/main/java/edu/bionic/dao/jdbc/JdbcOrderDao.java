@@ -46,7 +46,7 @@ public class JdbcOrderDao implements OrderDao {
     public List<Order> getAll() {
         String sql = "SELECT * FROM orders";
         List<Order> orders = jdbcTemplate.query(sql, ROW_MAPPER);
-        orders.forEach(order -> order.setProducts(jdbcProductDao.getByOrder(order.getId())));
+        orders.forEach(order -> order.setOperations(jdbcProductDao.getByOrder(order.getId())));
         return orders;
     }
 
@@ -54,7 +54,7 @@ public class JdbcOrderDao implements OrderDao {
     public List<Order> getAllByUser(int userId) {
         String sql = "SELECT * FROM orders WHERE user_id = ?";
         List<Order> orders = jdbcTemplate.query(sql, new Object[]{userId}, ROW_MAPPER);
-        orders.forEach(order -> order.setProducts(jdbcProductDao.getByOrder(order.getId())));
+        orders.forEach(order -> order.setOperations(jdbcProductDao.getByOrder(order.getId())));
         return orders;
     }
 
@@ -74,7 +74,7 @@ public class JdbcOrderDao implements OrderDao {
 
         String sql = "INSERT INTO orders_products (order_id, product_id) VALUES (:order_id, :product_id)";
 
-        order.getProducts().forEach(product -> {
+        order.getOperations().forEach(product -> {
             MapSqlParameterSource parameterSource = new MapSqlParameterSource();
             parameterSource.addValue("order_id", order.getId());
             parameterSource.addValue("product_id", product.getId());

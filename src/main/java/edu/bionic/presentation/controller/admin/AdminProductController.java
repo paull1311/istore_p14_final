@@ -1,6 +1,6 @@
 package edu.bionic.presentation.controller.admin;
 
-import edu.bionic.domain.Product;
+import edu.bionic.domain.Operation;
 import edu.bionic.service.ProductService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,36 +33,36 @@ public class AdminProductController {
     }
 
     @PostMapping("{productId}")
-    public String editProduct(@Valid @ModelAttribute Product product,
+    public String editProduct(@Valid @ModelAttribute Operation operation,
                               BindingResult bindingResult,
                               @PathVariable("productId") Integer productId,
                               RedirectAttributes redirectAttributes) {
         if  (bindingResult.hasErrors()) {
             return "admin/product-edit";
         }
-        product.setId(productId);
-        productService.update(product);
+        operation.setId(productId);
+        productService.update(operation);
         redirectAttributes.addFlashAttribute("updateIsSuccessful", true);
         return "redirect:/admin/products/" + productId;
     }
 
     @GetMapping("new")
     public String newProductPage(Model model) {
-        model.addAttribute("product", new Product());
+        model.addAttribute("product", new Operation());
         model.addAttribute("isNew", true);
         return "admin/product-edit";
     }
 
     @PostMapping("new")
-    public String editProduct(@Valid @ModelAttribute Product product,
+    public String editProduct(@Valid @ModelAttribute Operation operation,
                               BindingResult bindingResult,
                               Model model) {
         if  (bindingResult.hasErrors()) {
             model.addAttribute("isNew", true);
             return "admin/product-edit";
         }
-        Product createdProduct = productService.create(product);
-        return "redirect:/admin/products/" + createdProduct.getId();
+        Operation createdOperation = productService.create(operation);
+        return "redirect:/admin/products/" + createdOperation.getId();
     }
 
     @PostMapping("{productId}/delete")

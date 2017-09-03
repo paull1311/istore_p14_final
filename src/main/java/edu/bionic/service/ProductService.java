@@ -1,24 +1,24 @@
 package edu.bionic.service;
 
-import edu.bionic.domain.Product;
-import edu.bionic.dto.ProductSort;
+import edu.bionic.domain.Operation;
+import edu.bionic.dto.OperationSort;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public interface ProductService {
 
-    List<Product> getAll();
+    List<Operation> getAll();
 
-    List<Product> getAll(String name, BigDecimal min, BigDecimal max, ProductSort productSort, int offset, int limit);
+    List<Operation> getAll(String name, BigDecimal min, BigDecimal max, OperationSort operationSort, int offset, int limit);
 
     int getCount(String name, BigDecimal min, BigDecimal max);
 
-    Product getById(int productId);
+    Operation getById(int productId);
 
-    Product create(Product product);
+    Operation create(Operation operation);
 
-    void update(Product product);
+    void update(Operation operation);
 
     void delete(Integer productId);
 }

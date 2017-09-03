@@ -33,8 +33,8 @@
                     <tr>
                         <td>${order.name}</td>
                         <td>
-                            <c:forEach items="${order.products}" var="product">
-                                ${product.name} ${product.color} ${product.capacity} GB <br/>
+                            <c:forEach items="${order.operations}" var="operation">
+                                ${operation.name} ${operation.color} ${operation.capacity} GB <br/>
                             </c:forEach>
                         </td>
                         <td>${order.totalAmount}</td>

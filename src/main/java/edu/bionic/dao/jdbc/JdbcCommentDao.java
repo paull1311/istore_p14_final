@@ -2,7 +2,7 @@ package edu.bionic.dao.jdbc;
 
 import edu.bionic.dao.CommentDao;
 import edu.bionic.domain.Comment;
-import edu.bionic.domain.Product;
+import edu.bionic.domain.Operation;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -30,7 +30,7 @@ public class JdbcCommentDao implements CommentDao {
         ROW_MAPPER = (rs, rowNum) -> {
             Comment comment = new Comment();
             comment.setId(rs.getInt("id"));
-            comment.setProduct(new Product(rs.getInt("product_id")));
+            comment.setOperation(new Operation(rs.getInt("product_id")));
             comment.setAuthor(rs.getString("author"));
             comment.setDateTime(rs.getTimestamp("datetime").toLocalDateTime());
             comment.setText(rs.getString("text"));
@@ -53,7 +53,7 @@ public class JdbcCommentDao implements CommentDao {
     public Comment save(Comment comment) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue("author", comment.getAuthor());
-        parameterSource.addValue("product_id", comment.getProduct().getId());
+        parameterSource.addValue("product_id", comment.getOperation().getId());
         parameterSource.addValue("datetime", comment.getDateTime());
         parameterSource.addValue("rating", comment.getRating());
         parameterSource.addValue("text", comment.getText());

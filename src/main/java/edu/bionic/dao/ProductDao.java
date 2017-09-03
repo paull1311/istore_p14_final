@@ -1,6 +1,6 @@
 package edu.bionic.dao;
 
-import edu.bionic.domain.Product;
+import edu.bionic.domain.Operation;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -8,17 +8,17 @@ import java.util.Optional;
 
 public interface ProductDao {
 
-    List<Product> getAll();
+    List<Operation> getAll();
 
-    List<Product> getAllSortedByName(String name, BigDecimal min, BigDecimal max, boolean desc, int offset, int limit);
+    List<Operation> getAllSortedByName(String name, BigDecimal min, BigDecimal max, boolean desc, int offset, int limit);
 
-    List<Product> getAllSortedByPrice(String name, BigDecimal min, BigDecimal max, boolean desc, int offset, int limit);
+    List<Operation> getAllSortedByPrice(String name, BigDecimal min, BigDecimal max, boolean desc, int offset, int limit);
 
     int getCount(String name, BigDecimal min, BigDecimal max);
 
-    Optional<Product> getById(int productId);
+    Optional<Operation> getById(int productId);
 
-    Product save(Product product);
+    Operation save(Operation operation);
 
     boolean delete(int productId);
 }

@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class AdminProductControllerTest extends BaseControllerTest {
+public class AdminOperationControllerTest extends BaseControllerTest {
 
     @Test
     @WithUserDetails("admin@mail.com")

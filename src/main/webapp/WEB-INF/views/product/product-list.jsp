@@ -1,4 +1,4 @@
-<%@ page import="edu.bionic.dto.ProductSort" %>
+<%@ page import="edu.bionic.dto.OperationSort" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
@@ -9,11 +9,11 @@
 <div id="main" class="container">
     <div class="row">
         <div class="col-12 mt-5">
-            <c:if test="${currentOrder.products.size() > 0}">
+            <c:if test="${currentOrder.operations.size() > 0}">
                 <div class="alert alert-dark">
                     <div class="row">
                         <div class="col-12 col-sm-7 col-md-8">
-                            <div>Количество товаров в корзине: <strong>${currentOrder.products.size()}</strong></div>
+                            <div>Количество товаров в корзине: <strong>${currentOrder.operations.size()}</strong></div>
                             <div>Общая сумма <strong>${currentOrder.totalAmount}</strong></div>
                         </div>
                         <div class="col-12 col-sm-5 col-md-4 text-center text-sm-right">
@@ -53,20 +53,20 @@
                         <div class="form-group">
                             <label for="sort">Сортировка</label>
                             <select id="sort" name="sort" class="form-control">
-                                <option value="<%= ProductSort.NAME_ASC.name() %>"
-                                        <%= ProductSort.NAME_ASC.name().equals(request.getParameter("sort")) ? "selected" : "" %>>По
+                                <option value="<%= OperationSort.NAME_ASC.name() %>"
+                                        <%= OperationSort.NAME_ASC.name().equals(request.getParameter("sort")) ? "selected" : "" %>>По
                                     алфавиту А-Я
                                 </option>
-                                <option value="<%= ProductSort.NAME_DESC.name() %>"
-                                        <%= ProductSort.NAME_DESC.name().equals(request.getParameter("sort")) ? "selected" : "" %>>По
+                                <option value="<%= OperationSort.NAME_DESC.name() %>"
+                                        <%= OperationSort.NAME_DESC.name().equals(request.getParameter("sort")) ? "selected" : "" %>>По
                                     алфавиту Я-А
                                 </option>
-                                <option value="<%= ProductSort.PRICE_ASC.name() %>"
-                                        <%= ProductSort.PRICE_ASC.name().equals(request.getParameter("sort")) ? "selected" : "" %>>От
+                                <option value="<%= OperationSort.PRICE_ASC.name() %>"
+                                        <%= OperationSort.PRICE_ASC.name().equals(request.getParameter("sort")) ? "selected" : "" %>>От
                                     дешевых к дорогим
                                 </option>
-                                <option value="<%= ProductSort.PRICE_DESC.name() %>"
-                                        <%= ProductSort.PRICE_DESC.name().equals(request.getParameter("sort")) ? "selected" : "" %>>От
+                                <option value="<%= OperationSort.PRICE_DESC.name() %>"
+                                        <%= OperationSort.PRICE_DESC.name().equals(request.getParameter("sort")) ? "selected" : "" %>>От
                                     дорогих к дешевым
                                 </option>
                             </select>
@@ -79,13 +79,13 @@
                 <div class="col-12 col-sm-9 col-md-8 col-lg-8">
 
                     <div id="catalog" class="row">
-                        <c:forEach items="${products}" var="product">
-                            <jsp:useBean id="product" type="edu.bionic.domain.Product"/>
-                            <%--<li><c:out value="${product.printInfo()}"/></li>--%>
+                        <c:forEach items="${operations}" var="operation">
+                            <jsp:useBean id="operation" type="edu.bionic.domain.Operation"/>
+                            <%--<li><c:out value="${operation.printInfo()}"/></li>--%>
                             <div class="col-xs-6 col-sm-4">
-                                <a href="<c:url value="products/${product.id}"/>" class="product">
-                                    <img src="/resources/img/product-placeholder.jpg" class="img-thumbnail">
-                                    <span class="info">${product.printInfo()}</span>
+                                <a href="<c:url value="operations/${operation.id}"/>" class="operation">
+                                    <img src="/resources/img/operation-placeholder.jpg" class="img-thumbnail">
+                                    <span class="info">${operation.printInfo()}</span>
                                 </a>
                             </div>
                         </c:forEach>
@@ -105,7 +105,7 @@
                                     </c:when>
                                     <c:otherwise>
                                         <li class="page-item">
-                                            <a href="<c:url value="products?${query}&page=${loop.index}"/>" class="page-link">
+                                            <a href="<c:url value="operations?${query}&page=${loop.index}"/>" class="page-link">
                                                     ${loop.index}
                                             </a>
                                         </li>

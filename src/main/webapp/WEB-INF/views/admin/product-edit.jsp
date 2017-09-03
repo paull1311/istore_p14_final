@@ -11,13 +11,13 @@
     <div class="row">
         <div class="col-12 mt-5">
 
-            <h1 class="text-center">${isNew ? "Новый товар" : "Редактирование товара №".concat(product.id)}</h1>
+            <h1 class="text-center">${isNew ? "Новый товар" : "Редактирование товара №".concat(operation.id)}</h1>
 
             <c:if test="${updateIsSuccessful}">
                 <div class="alert alert-success mt-5">Изменения сохранены</div>
             </c:if>
 
-            <form:form modelAttribute="product">
+            <form:form modelAttribute="operation">
                 <form:hidden path="id"/>
                 <div class="form-group">
                     <label for="name">Наименование</label>
@@ -58,7 +58,7 @@
                 <div class="form-group">
                     <div class="row justify-content-between">
                         <div class="col-auto">
-                            <a href="<c:url value="/admin/products"/>" class="btn btn-light">
+                            <a href="<c:url value="/admin/operations"/>" class="btn btn-light">
                                 <i class="fa fa-chevron-left" aria-hidden="true"></i>
                                 Вернуться
                             </a>

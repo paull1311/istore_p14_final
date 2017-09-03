@@ -2,7 +2,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
-<c:set var="title" value="${product.name}" scope="request"/>
+<c:set var="title" value="${operation.name}" scope="request"/>
 <jsp:include page="../components/head.jsp"/>
 <body>
 <jsp:include page="../components/header.jsp"/>
@@ -10,7 +10,7 @@
     <div class="row">
 
         <div class="col-12 text-center text-sm-left mt-5">
-            <a href="<c:url value="/products"/>" class=" btn btn-light">
+            <a href="<c:url value="/operations"/>" class=" btn btn-light">
                 <i class="fa fa-chevron-left" aria-hidden="true"></i>
                 Вернуться
             </a>
@@ -18,11 +18,11 @@
 
         <div class="col-12 mt-3">
 
-            <c:if test="${currentOrder.products.size() > 0}">
+            <c:if test="${currentOrder.operations.size() > 0}">
                 <div class="alert alert-dark">
                     <div class="row">
                         <div class="col-12 col-sm-7 col-md-8">
-                            <div>Количество товаров в корзине: <strong>${currentOrder.products.size()}</strong></div>
+                            <div>Количество товаров в корзине: <strong>${currentOrder.operations.size()}</strong></div>
                             <div>Общая сумма <strong>${currentOrder.totalAmount}</strong></div>
                         </div>
                         <div class="col-12 col-sm-5 col-md-4 text-center text-sm-right">
@@ -35,14 +35,14 @@
                 </div>
             </c:if>
 
-            <div id="product" class="row">
+            <div id="operation" class="row">
                 <div class="col-12 col-sm-4">
-                    <img src="/resources/img/product-placeholder.jpg" class="img-thumbnail">
+                    <img src="/resources/img/operation-placeholder.jpg" class="img-thumbnail">
                 </div>
                 <div class="col-12 col-sm-8">
-                    <h1 class="text-center text-sm-left">${product.name}</h1>
+                    <h1 class="text-center text-sm-left">${operation.name}</h1>
                     <div class="price text-center text-sm-right">Цена:
-                        <span class="text-danger">${product.price} USD</span></div>
+                        <span class="text-danger">${operation.price} USD</span></div>
                     <table class="table">
                         <thead class="thead-default">
                         <tr>
@@ -52,20 +52,20 @@
                         <tbody>
                         <tr>
                             <th scope="row">Цвет:</th>
-                            <td>${product.color}</td>
+                            <td>${operation.color}</td>
                         </tr>
                         <tr>
                             <th scope="row">Экран:</th>
-                            <td>${product.display}</td>
+                            <td>${operation.display}</td>
                         </tr>
                         <tr>
                             <th scope="row">Память:</th>
-                            <td>${product.capacity} GB</td>
+                            <td>${operation.capacity} GB</td>
                         </tr>
                         </tbody>
                     </table>
                     <div class="mt-3 text-center text-sm-right">
-                        <form:form method="post" servletRelativeAction="/products/${product.id}/addToBasket">
+                        <form:form method="post" servletRelativeAction="/operations/${operation.id}/addToBasket">
                             <button type="submit" class="btn btn-dark">Добавить в корзину</button>
                         </form:form>
                     </div>
@@ -126,7 +126,7 @@
                                 </label>
                             </div>
                         </div>
-                        <form:hidden path="product.id" value="${product.id}"/>
+                        <form:hidden path="operation.id" value="${operation.id}"/>
                         <div class="form-group text-center text-sm-right">
                             <button type="submit" class="btn btn-dark">Отправить</button>
                         </div>

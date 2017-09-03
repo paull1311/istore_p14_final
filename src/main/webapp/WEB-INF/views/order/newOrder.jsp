@@ -10,7 +10,7 @@
     <div class="row">
 
         <div class="col-12 text-center text-sm-left mt-5">
-            <a href="<c:url value="/products"/>" class=" btn btn-light">
+            <a href="<c:url value="/operations"/>" class=" btn btn-light">
             <i class="fa fa-chevron-left" aria-hidden="true"></i>
             Вернться к покупкам
             </a>
@@ -18,13 +18,13 @@
 
         <div class="col-12">
 
-            <c:if test="${currentOrder.products.size() == 0}">
+            <c:if test="${currentOrder.operations.size() == 0}">
                 <div class="alert alert-dark">
                     На данный момент товаров в корзине нет
                 </div>
             </c:if>
 
-            <c:if test="${currentOrder.products.size() > 0}">
+            <c:if test="${currentOrder.operations.size() > 0}">
 
                 <div id="cart">
                     <h1 class="text-center">Товары в корзине</h1>
@@ -38,11 +38,11 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <c:forEach items="${currentOrder.products}" var="product" varStatus="loop">
+                        <c:forEach items="${currentOrder.operations}" var="operation" varStatus="loop">
                             <tr>
                                 <td>${loop.index + 1}</td>
-                                <td>${product.name} ${product.color} ${product.capacity} GB</td>
-                                <td class="text-center">${product.price}</td>
+                                <td>${operation.name} ${operation.color} ${operation.capacity} GB</td>
+                                <td class="text-center">${operation.price}</td>
                                 <td width="5">
                                     <form:form servletRelativeAction="/orders/newOrder/removeProduct?index=${loop.index}">
                                         <button type="submit" class="btn btn-outline-danger">

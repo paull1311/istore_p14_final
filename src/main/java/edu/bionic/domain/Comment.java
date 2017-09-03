@@ -17,7 +17,7 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
-    private Product product;
+    private Operation operation;
 
     @NotBlank(message = "Имя не должно быть пустым")
     private String author;
@@ -29,9 +29,9 @@ public class Comment {
     @Range(min = 1, max = 5)
     private Integer rating;
 
-    public Comment(Integer id, Product product, String author, LocalDateTime dateTime, String text, Integer rating) {
+    public Comment(Integer id, Operation operation, String author, LocalDateTime dateTime, String text, Integer rating) {
         this.id = id;
-        this.product = product;
+        this.operation = operation;
         this.author = author;
         this.dateTime = dateTime;
         this.text = text;
@@ -40,7 +40,7 @@ public class Comment {
 
 
     public Comment() {
-        this.product = new Product();
+        this.operation = new Operation();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class Comment {
         Comment comment = (Comment) o;
 
         if (id != null ? !id.equals(comment.id) : comment.id != null) return false;
-        if (product != null ? !product.getId().equals(comment.product.getId()) : comment.product != null) return false;
+        if (operation != null ? !operation.getId().equals(comment.operation.getId()) : comment.operation != null) return false;
         if (author != null ? !author.equals(comment.author) : comment.author != null) return false;
         return dateTime != null ? dateTime.equals(comment.dateTime) : comment.dateTime == null;
     }
@@ -59,7 +59,7 @@ public class Comment {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (product.getId() != null ? product.getId().hashCode() : 0);
+        result = 31 * result + (operation.getId() != null ? operation.getId().hashCode() : 0);
         result = 31 * result + (author != null ? author.hashCode() : 0);
         result = 31 * result + (dateTime != null ? dateTime.hashCode() : 0);
         return result;
@@ -69,7 +69,7 @@ public class Comment {
     public String toString() {
         return "Comment{" +
                 "id=" + id +
-                ", product=" + product.getId() +
+                ", operation=" + operation.getId() +
                 ", author='" + author + '\'' +
                 ", dateTime=" + dateTime +
                 ", text='" + text + '\'' +
@@ -85,12 +85,12 @@ public class Comment {
         this.id = id;
     }
 
-    public Product getProduct() {
-        return product;
+    public Operation getOperation() {
+        return operation;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setOperation(Operation operation) {
+        this.operation = operation;
     }
 
     public String getAuthor() {

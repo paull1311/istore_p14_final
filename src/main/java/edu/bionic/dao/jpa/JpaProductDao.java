@@ -1,7 +1,7 @@
 package edu.bionic.dao.jpa;
 
 import edu.bionic.dao.ProductDao;
-import edu.bionic.domain.Product;
+import edu.bionic.domain.Operation;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -22,18 +22,18 @@ public class JpaProductDao implements ProductDao {
     private EntityManager entityManager;
 
     @Override
-    public List<Product> getAll() {
-        return entityManager.createQuery("SELECT p FROM Product p", Product.class)
+    public List<Operation> getAll() {
+        return entityManager.createQuery("SELECT p FROM Product p", Operation.class)
                 .getResultList();
     }
 
     @Override
-    public List<Product> getAllSortedByName(String name, BigDecimal min, BigDecimal max, boolean desc, int offset, int limit) {
-        TypedQuery<Product> query = this.entityManager.createQuery("SELECT p FROM Product p " +
+    public List<Operation> getAllSortedByName(String name, BigDecimal min, BigDecimal max, boolean desc, int offset, int limit) {
+        TypedQuery<Operation> query = this.entityManager.createQuery("SELECT p FROM Product p " +
                 "WHERE p.name LIKE :name " +
                 "AND (:min is NULL OR p.price >= :min) " +
                 "AND (:max is NULL OR p.price <= :max) " +
-                "ORDER BY p.name " + (desc ? "DESC " : "ASC "), Product.class);
+                "ORDER BY p.name " + (desc ? "DESC " : "ASC "), Operation.class);
 
         query.setParameter("name", StringUtils.isEmpty(name) ? "%" : "%" + name + "%");
         query.setParameter("min", min);
@@ -45,12 +45,12 @@ public class JpaProductDao implements ProductDao {
     }
 
     @Override
-    public List<Product> getAllSortedByPrice(String name, BigDecimal min, BigDecimal max, boolean desc, int offset, int limit) {
-        TypedQuery<Product> query = this.entityManager.createQuery("SELECT p FROM Product p " +
+    public List<Operation> getAllSortedByPrice(String name, BigDecimal min, BigDecimal max, boolean desc, int offset, int limit) {
+        TypedQuery<Operation> query = this.entityManager.createQuery("SELECT p FROM Product p " +
                 "WHERE p.name LIKE :name " +
                 "AND (:min is NULL OR p.price >= :min) " +
                 "AND (:max is NULL OR p.price <= :max) " +
-                "ORDER BY p.price " + (desc ? "DESC " : "ASC "), Product.class);
+                "ORDER BY p.price " + (desc ? "DESC " : "ASC "), Operation.class);
 
         query.setParameter("name", StringUtils.isEmpty(name) ? "%" : "%" + name + "%");
         query.setParameter("min", min);
@@ -75,19 +75,19 @@ public class JpaProductDao implements ProductDao {
     }
 
     @Override
-    public Optional<Product> getById(int productId) {
-        Product product = entityManager.find(Product.class, productId);
-        return Optional.ofNullable(product);
+    public Optional<Operation> getById(int productId) {
+        Operation operation = entityManager.find(Operation.class, productId);
+        return Optional.ofNullable(operation);
     }
 
     @Override
     @Transactional
-    public Product save(Product product) {
-        if (product.getId() == null) {
-            entityManager.persist(product);
-            return product;
+    public Operation save(Operation operation) {
+        if (operation.getId() == null) {
+            entityManager.persist(operation);
+            return operation;
         } else {
-           return entityManager.merge(product);
+           return entityManager.merge(operation);
         }
     }
 

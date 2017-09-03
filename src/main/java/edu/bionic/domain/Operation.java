@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "products")
-public class Product {
+public class Operation {
 
     @Id
     @Access(AccessType.PROPERTY)
@@ -26,17 +26,18 @@ public class Product {
     @Min(value = 0, message = "Память должна быть больше 0")
     private Integer capacity;
     @NotBlank(message = "Обязательное поле")
+    private OperationType operationType;
     private String display;
     private String description;
 
-    public Product() {
+    public Operation() {
     }
 
-    public Product(Integer id) {
+    public Operation(Integer id) {
         this.id = id;
     }
 
-    public Product(Integer id, String name, BigDecimal price, Color color, Integer capacity, String display, String description) {
+    public Operation(Integer id, String name, BigDecimal price, Color color, Integer capacity, String display, String description) {
         this.id = id;
         this.name = name;
         this.price = price.setScale(2, BigDecimal.ROUND_HALF_UP);
@@ -51,15 +52,15 @@ public class Product {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Product product = (Product) o;
+        Operation operation = (Operation) o;
 
-        if (id != null ? !id.equals(product.id) : product.id != null) return false;
-        if (name != null ? !name.equals(product.name) : product.name != null) return false;
-        if (price != null ? !price.equals(product.price) : product.price != null) return false;
-        if (color != product.color) return false;
-        if (capacity != null ? !capacity.equals(product.capacity) : product.capacity != null) return false;
-        if (display != null ? !display.equals(product.display) : product.display != null) return false;
-        return description != null ? description.equals(product.description) : product.description == null;
+        if (id != null ? !id.equals(operation.id) : operation.id != null) return false;
+        if (name != null ? !name.equals(operation.name) : operation.name != null) return false;
+        if (price != null ? !price.equals(operation.price) : operation.price != null) return false;
+        if (color != operation.color) return false;
+        if (capacity != null ? !capacity.equals(operation.capacity) : operation.capacity != null) return false;
+        if (display != null ? !display.equals(operation.display) : operation.display != null) return false;
+        return description != null ? description.equals(operation.description) : operation.description == null;
     }
 
     @Override
@@ -76,7 +77,7 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product{" +
+        return "Operation{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", price=" + price +

@@ -1,8 +1,8 @@
 package edu.bionic.service.impl;
 
 import edu.bionic.dao.OrderDao;
+import edu.bionic.domain.Operation;
 import edu.bionic.domain.Order;
-import edu.bionic.domain.Product;
 import edu.bionic.domain.User;
 import edu.bionic.service.OrderService;
 import edu.bionic.service.ProductService;
@@ -54,12 +54,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void addProductToOrder(Order order, Integer productId) {
-        Product newProduct = productService.getById(productId);
-        order.addProduct(newProduct);
+        Operation newOperation = productService.getById(productId);
+        order.addProduct(newOperation);
         order.setTotalAmount(
-                order.getProducts()
+                order.getOperations()
                         .stream()
-                        .map(Product::getPrice)
+                        .map(Operation::getPrice)
                         .reduce(BigDecimal::add)
                         .orElse(BigDecimal.ZERO)
         );
@@ -69,9 +69,9 @@ public class OrderServiceImpl implements OrderService {
     public void removeProductFromOrder(Order order, int indexOfProduct) {
         order.removeProduct(indexOfProduct);
         order.setTotalAmount(
-                order.getProducts()
+                order.getOperations()
                         .stream()
-                        .map(Product::getPrice)
+                        .map(Operation::getPrice)
                         .reduce(BigDecimal::add)
                         .orElse(BigDecimal.ZERO)
         );

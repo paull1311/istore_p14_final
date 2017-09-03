@@ -2,7 +2,7 @@ package edu.bionic.testdata;
 
 import com.google.common.collect.Lists;
 import edu.bionic.domain.Comment;
-import edu.bionic.domain.Product;
+import edu.bionic.domain.Operation;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -13,7 +13,7 @@ public class CommentFactory {
     public static Comment getComment1() {
         return new Comment(
                 1,
-                new Product(1),
+                new Operation(1),
                 "Сергей",
                 LocalDateTime.of(2016, Month.DECEMBER, 28, 13, 0),
                 "Отличный девайс. Пользуюсь уже около года. Никаких замечаний",
@@ -24,7 +24,7 @@ public class CommentFactory {
     public static Comment getComment2() {
         return new Comment(
                 2,
-                new Product(4),
+                new Operation(4),
                 "Анна",
                 LocalDateTime.of(2017, Month.MARCH, 12, 15, 0),
                 "Возникли проблемы на второй месяц использования. Пропадает зук в динамиках",
@@ -35,7 +35,7 @@ public class CommentFactory {
     public static Comment getComment3() {
         return new Comment(
                 3,
-                new Product(1),
+                new Operation(1),
                 "Инна",
                 LocalDateTime.of(2017, Month.APRIL, 5, 10, 30),
                 "Хоший телефон. Единственный недостаток это цена :(",
@@ -50,7 +50,7 @@ public class CommentFactory {
     public static Comment getNewCommentForProduct1() {
         return new Comment(
                 null,
-                new Product(1),
+                new Operation(1),
                 "Валера",
                 LocalDateTime.of(2017, Month.AUGUST, 11, 11, 11),
                 "Классный аппарат!!",

@@ -1,6 +1,6 @@
 package edu.bionic.presentation.console;
 
-import edu.bionic.domain.Product;
+import edu.bionic.domain.Operation;
 import edu.bionic.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,12 +20,12 @@ public class ProductConsoleController {
     }
 
     public void printProductInfo(int productId) {
-        Product product = productService.getById(productId);
+        Operation operation = productService.getById(productId);
 
-        System.out.println("Наименование: " + product.getName());
-        System.out.println("Цвет: " + product.getColor());
-        System.out.println("Память: " + product.getCapacity());
-        System.out.println("Дисплей: " + product.getDisplay());
-        System.out.println("Цена: " + product.getPrice());
+        System.out.println("Наименование: " + operation.getName());
+        System.out.println("Цвет: " + operation.getColor());
+        System.out.println("Память: " + operation.getCapacity());
+        System.out.println("Дисплей: " + operation.getDisplay());
+        System.out.println("Цена: " + operation.getPrice());
     }
 }

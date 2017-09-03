@@ -2,13 +2,13 @@ DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS orders_products;
 DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS operations;
 
-CREATE TABLE products (
+CREATE TABLE operations (
   id          SERIAL PRIMARY KEY,
   name        TEXT NOT NULL,
-  price       NUMERIC(10,2),
-  color       INTEGER,
+  value       NUMERIC(10,2),
+  datetime    TIMESTAMP WITH TIME ZONE NOT NULL,
   capacity    INTEGER,
   display     TEXT,
   description TEXT
@@ -38,7 +38,7 @@ CREATE TABLE orders_products (
   order_id    INTEGER NOT NULL,
   product_id  INTEGER NOT NULL,
   FOREIGN KEY (order_id) REFERENCES orders (id) ON DELETE CASCADE,
-  FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE
+  FOREIGN KEY (product_id) REFERENCES operations (id) ON DELETE CASCADE
 );
 
 CREATE TABLE comments (
@@ -48,5 +48,5 @@ CREATE TABLE comments (
   datetime    TIMESTAMP WITH TIME ZONE NOT NULL,
   text        TEXT,
   rating      INTEGER,
-  FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE
+  FOREIGN KEY (product_id) REFERENCES operations (id) ON DELETE CASCADE
 );

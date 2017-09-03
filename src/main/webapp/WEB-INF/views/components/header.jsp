@@ -14,8 +14,8 @@
                             Главная
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a href="<c:url value="/products"/>" class="nav-link">
+                    <%--<li class="nav-item">
+                        <a href="<c:url value="/operations"/>" class="nav-link">
                             Товары
                         </a>
                     </li>
@@ -25,7 +25,7 @@
                                 Предыдущие заказы
                             </a>
                         </li>
-                    </sec:authorize>
+                    </sec:authorize>--%>
                 </ul>
                 <div class="dropdown d-block d-sm-none">
                     <button type="button" data-toggle="dropdown" class="btn btn-link dropdown-toggle">
@@ -35,7 +35,7 @@
                         <a href="<c:url value="/"/>" class="dropdown-item">
                             Главная
                         </a>
-                        <a href="<c:url value="/products"/>" class="dropdown-item">
+                        <a href="<c:url value="/operations"/>" class="dropdown-item">
                             Товары
                         </a>
                         <sec:authorize url="/orders">
@@ -50,8 +50,8 @@
             <sec:authorize access="isAuthenticated()">
                 <div class="col-10 col-sm-auto">
                     <form:form servletRelativeAction="/logout">
-                        <sec:authorize url="/admin/products">
-                            <a href="<c:url value="/admin/products"/>" class="btn btn-link">Админпанель</a>
+                        <sec:authorize url="/admin/operations">
+                            <a href="<c:url value="/admin/operations"/>" class="btn btn-link">Админпанель</a>
                         </sec:authorize>
                         <button type="submit" class="btn btn-light">Выйти</button>
                     </form:form>

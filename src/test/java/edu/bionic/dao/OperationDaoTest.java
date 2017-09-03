@@ -1,6 +1,6 @@
 package edu.bionic.dao;
 
-import edu.bionic.domain.Product;
+import edu.bionic.domain.Operation;
 import edu.bionic.testdata.ProductFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,48 +11,48 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ProductDaoTest extends BaseDaoTest {
+public class OperationDaoTest extends BaseDaoTest {
 
     @Autowired
     private ProductDao productDao;
 
     @Test
     public void getAll() throws Exception {
-        List<Product> expected = ProductFactory.getAllProducts();
-        List<Product> actual = productDao.getAll();
+        List<Operation> expected = ProductFactory.getAllProducts();
+        List<Operation> actual = productDao.getAll();
 
         Assert.assertEquals(expected.toString(), actual.toString());
     }
 
     @Test
     public void getById() throws Exception {
-        Product expected = ProductFactory.getProduct1();
-        Product actual = productDao.getById(1).get();
+        Operation expected = ProductFactory.getProduct1();
+        Operation actual = productDao.getById(1).get();
 
         Assert.assertEquals(expected.toString(), actual.toString());
     }
 
     @Test
     public void saveNew() throws Exception {
-        Product newProduct = ProductFactory.newProduct();
-        Product savedProduct = productDao.save(newProduct);
-        newProduct.setId(savedProduct.getId());
+        Operation newOperation = ProductFactory.newProduct();
+        Operation savedOperation = productDao.save(newOperation);
+        newOperation.setId(savedOperation.getId());
 
-        List<Product> expected = ProductFactory.getAllProducts();
-        expected.add(newProduct);
-        List<Product> actual = productDao.getAll();
+        List<Operation> expected = ProductFactory.getAllProducts();
+        expected.add(newOperation);
+        List<Operation> actual = productDao.getAll();
 
         Assert.assertEquals(expected.toString(), actual.toString());
     }
 
     @Test
     public void saveUpdate() throws Exception {
-        Product productToUpdate = ProductFactory.getProduct2Updated();
-        Product updatedProduct = productDao.save(productToUpdate);
-        Assert.assertEquals(productToUpdate.toString(), updatedProduct.toString());
+        Operation operationToUpdate = ProductFactory.getProduct2Updated();
+        Operation updatedOperation = productDao.save(operationToUpdate);
+        Assert.assertEquals(operationToUpdate.toString(), updatedOperation.toString());
 
-        Product updatedProductFromDB = productDao.getById(2).get();
-        Assert.assertEquals(productToUpdate.toString(), updatedProductFromDB.toString());
+        Operation updatedOperationFromDB = productDao.getById(2).get();
+        Assert.assertEquals(operationToUpdate.toString(), updatedOperationFromDB.toString());
     }
 
     @Test
@@ -60,9 +60,9 @@ public class ProductDaoTest extends BaseDaoTest {
         boolean isDeleted = productDao.delete(3);
         Assert.assertEquals(isDeleted, true);
 
-        List<Product> expected = ProductFactory.getAllProducts()
+        List<Operation> expected = ProductFactory.getAllProducts()
                 .stream().filter(product -> product.getId() != 3).collect(Collectors.toList());
-        List<Product> actual = productDao.getAll();
+        List<Operation> actual = productDao.getAll();
 
         Assert.assertEquals(expected.toString(), actual.toString());
     }
@@ -75,12 +75,12 @@ public class ProductDaoTest extends BaseDaoTest {
 
     @Test
     public void getAllSortedByName() throws Exception {
-        List<Product> expected = ProductFactory.getAllProducts()
+        List<Operation> expected = ProductFactory.getAllProducts()
                 .stream()
-                .sorted(Comparator.comparing(Product::getName))
+                .sorted(Comparator.comparing(Operation::getName))
                 .collect(Collectors.toList());
 
-        List<Product> actual = productDao.getAllSortedByName(null, null, null, false, 0, 1000);
+        List<Operation> actual = productDao.getAllSortedByName(null, null, null, false, 0, 1000);
 
         Assert.assertEquals(expected.toString(), actual.toString());
     }
@@ -89,26 +89,26 @@ public class ProductDaoTest extends BaseDaoTest {
     public void getAllSortedByNameWithLimits() throws Exception {
         int offset = 2;
         int limit = 3;
-        List<Product> expected = ProductFactory.getAllProducts()
+        List<Operation> expected = ProductFactory.getAllProducts()
                 .stream()
-                .sorted(Comparator.comparing(Product::getName))
+                .sorted(Comparator.comparing(Operation::getName))
                 .skip(offset)
                 .limit(limit)
                 .collect(Collectors.toList());
 
-        List<Product> actual = productDao.getAllSortedByName(null, null, null, false, offset, limit);
+        List<Operation> actual = productDao.getAllSortedByName(null, null, null, false, offset, limit);
 
         Assert.assertEquals(expected.toString(), actual.toString());
     }
 
     @Test
     public void getAllSortedByNameDesc() throws Exception {
-        List<Product> expected = ProductFactory.getAllProducts()
+        List<Operation> expected = ProductFactory.getAllProducts()
                 .stream()
                 .sorted((p1, p2) -> p2.getName().compareTo(p1.getName()))
                 .collect(Collectors.toList());
 
-        List<Product> actual = productDao.getAllSortedByName(null, null, null, true, 0, 1000);
+        List<Operation> actual = productDao.getAllSortedByName(null, null, null, true, 0, 1000);
 
         Assert.assertEquals(expected.toString(), actual.toString());
     }
@@ -116,13 +116,13 @@ public class ProductDaoTest extends BaseDaoTest {
     @Test
     public void getAllFilteredByNameSortedByName() throws Exception {
         String filterName = "Plus";
-        List<Product> expected = ProductFactory.getAllProducts()
+        List<Operation> expected = ProductFactory.getAllProducts()
                 .stream()
                 .filter(product -> product.getName().contains(filterName))
-                .sorted(Comparator.comparing(Product::getName))
+                .sorted(Comparator.comparing(Operation::getName))
                 .collect(Collectors.toList());
 
-        List<Product> actual = productDao.getAllSortedByName(filterName, null, null, false, 0, 1000);
+        List<Operation> actual = productDao.getAllSortedByName(filterName, null, null, false, 0, 1000);
 
         Assert.assertEquals(expected.toString(), actual.toString());
     }
@@ -131,26 +131,26 @@ public class ProductDaoTest extends BaseDaoTest {
     public void getAllFilteredByPriceSortedByName() throws Exception {
         BigDecimal filterMin = BigDecimal.valueOf(650);
         BigDecimal filterMax = BigDecimal.valueOf(700);
-        List<Product> expected = ProductFactory.getAllProducts()
+        List<Operation> expected = ProductFactory.getAllProducts()
                 .stream()
                 .filter(product -> product.getPrice().compareTo(filterMin) >= 0
                         && product.getPrice().compareTo(filterMax) <= 0)
-                .sorted(Comparator.comparing(Product::getName))
+                .sorted(Comparator.comparing(Operation::getName))
                 .collect(Collectors.toList());
 
-        List<Product> actual = productDao.getAllSortedByName(null, filterMin, filterMax, false, 0, 1000);
+        List<Operation> actual = productDao.getAllSortedByName(null, filterMin, filterMax, false, 0, 1000);
 
         Assert.assertEquals(expected.toString(), actual.toString());
     }
 
     @Test
     public void getAllSortedByPrice() throws Exception {
-        List<Product> expected = ProductFactory.getAllProducts()
+        List<Operation> expected = ProductFactory.getAllProducts()
                 .stream()
-                .sorted(Comparator.comparing(Product::getPrice))
+                .sorted(Comparator.comparing(Operation::getPrice))
                 .collect(Collectors.toList());
 
-        List<Product> actual = productDao.getAllSortedByPrice(null, null, null, false, 0, 1000);
+        List<Operation> actual = productDao.getAllSortedByPrice(null, null, null, false, 0, 1000);
 
         Assert.assertEquals(expected.toString(), actual.toString());
     }
@@ -159,26 +159,26 @@ public class ProductDaoTest extends BaseDaoTest {
     public void getAllSortedByPriceWithLimits() throws Exception {
         int offset = 2;
         int limit = 3;
-        List<Product> expected = ProductFactory.getAllProducts()
+        List<Operation> expected = ProductFactory.getAllProducts()
                 .stream()
-                .sorted(Comparator.comparing(Product::getPrice))
+                .sorted(Comparator.comparing(Operation::getPrice))
                 .skip(offset)
                 .limit(limit)
                 .collect(Collectors.toList());
 
-        List<Product> actual = productDao.getAllSortedByPrice(null, null, null, false, offset, limit);
+        List<Operation> actual = productDao.getAllSortedByPrice(null, null, null, false, offset, limit);
 
         Assert.assertEquals(expected.toString(), actual.toString());
     }
 
     @Test
     public void getAllSortedByPriceDesc() throws Exception {
-        List<Product> expected = ProductFactory.getAllProducts()
+        List<Operation> expected = ProductFactory.getAllProducts()
                 .stream()
                 .sorted((p1, p2) -> p2.getPrice().compareTo(p1.getPrice()))
                 .collect(Collectors.toList());
 
-        List<Product> actual = productDao.getAllSortedByPrice(null, null, null, true, 0, 1000);
+        List<Operation> actual = productDao.getAllSortedByPrice(null, null, null, true, 0, 1000);
 
         Assert.assertEquals(expected.toString(), actual.toString());
     }
@@ -186,13 +186,13 @@ public class ProductDaoTest extends BaseDaoTest {
     @Test
     public void getAllFilteredByNameSortedByPrice() throws Exception {
         String filterName = "Plus";
-        List<Product> expected = ProductFactory.getAllProducts()
+        List<Operation> expected = ProductFactory.getAllProducts()
                 .stream()
                 .filter(product -> product.getName().contains(filterName))
-                .sorted(Comparator.comparing(Product::getPrice))
+                .sorted(Comparator.comparing(Operation::getPrice))
                 .collect(Collectors.toList());
 
-        List<Product> actual = productDao.getAllSortedByPrice(filterName, null, null, false, 0, 1000);
+        List<Operation> actual = productDao.getAllSortedByPrice(filterName, null, null, false, 0, 1000);
 
         Assert.assertEquals(expected.toString(), actual.toString());
     }
@@ -201,14 +201,14 @@ public class ProductDaoTest extends BaseDaoTest {
     public void getAllFilteredByPriceSortedByPrice() throws Exception {
         BigDecimal filterMin = BigDecimal.valueOf(650);
         BigDecimal filterMax = BigDecimal.valueOf(700);
-        List<Product> expected = ProductFactory.getAllProducts()
+        List<Operation> expected = ProductFactory.getAllProducts()
                 .stream()
                 .filter(product -> product.getPrice().compareTo(filterMin) >= 0
                         && product.getPrice().compareTo(filterMax) <= 0)
-                .sorted(Comparator.comparing(Product::getPrice))
+                .sorted(Comparator.comparing(Operation::getPrice))
                 .collect(Collectors.toList());
 
-        List<Product> actual = productDao.getAllSortedByPrice(null, filterMin, filterMax, false, 0, 1000);
+        List<Operation> actual = productDao.getAllSortedByPrice(null, filterMin, filterMax, false, 0, 1000);
 
         Assert.assertEquals(expected.toString(), actual.toString());
     }

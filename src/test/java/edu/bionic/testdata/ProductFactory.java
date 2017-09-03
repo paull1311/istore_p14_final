@@ -2,15 +2,15 @@ package edu.bionic.testdata;
 
 import com.google.common.collect.Lists;
 import edu.bionic.domain.Color;
-import edu.bionic.domain.Product;
+import edu.bionic.domain.Operation;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public class ProductFactory {
 
-    public static Product getProduct1() {
-        return new Product(
+    public static Operation getProduct1() {
+        return new Operation(
                 1,
                 "iPhone 6",
                 BigDecimal.valueOf(650),
@@ -21,8 +21,8 @@ public class ProductFactory {
         );
     }
 
-    public static Product getProduct2() {
-        return new Product(
+    public static Operation getProduct2() {
+        return new Operation(
                 2,
                 "iPhone 7",
                 BigDecimal.valueOf(700),
@@ -33,8 +33,8 @@ public class ProductFactory {
         );
     }
 
-    public static Product getProduct3() {
-        return new Product(
+    public static Operation getProduct3() {
+        return new Operation(
                 3,
                 "iPhone 8",
                 BigDecimal.valueOf(750),
@@ -45,8 +45,8 @@ public class ProductFactory {
         );
     }
 
-    public static Product getProduct4() {
-        return new Product(
+    public static Operation getProduct4() {
+        return new Operation(
                 4,
                 "iPhone 6 Plus",
                 BigDecimal.valueOf(700),
@@ -57,8 +57,8 @@ public class ProductFactory {
         );
     }
 
-    public static Product getProduct5() {
-        return new Product(
+    public static Operation getProduct5() {
+        return new Operation(
                 5,
                 "iPhone 7 Plus",
                 BigDecimal.valueOf(800),
@@ -69,8 +69,8 @@ public class ProductFactory {
         );
     }
 
-    public static Product getProduct6() {
-        return new Product(
+    public static Operation getProduct6() {
+        return new Operation(
                 6,
                 "iPhone 8 Plus",
                 BigDecimal.valueOf(900),
@@ -81,7 +81,7 @@ public class ProductFactory {
         );
     }
 
-    public static List<Product> getAllProducts() {
+    public static List<Operation> getAllProducts() {
         return Lists.newArrayList(
                 getProduct1(),
                 getProduct2(),
@@ -92,8 +92,8 @@ public class ProductFactory {
         );
     }
 
-    public static Product newProduct() {
-        return new Product(
+    public static Operation newProduct() {
+        return new Operation(
                 null,
                 "iPhone 8",
                 BigDecimal.valueOf(900),
@@ -104,8 +104,8 @@ public class ProductFactory {
         );
     }
 
-    public static Product getProduct2Updated() {
-        return new Product(
+    public static Operation getProduct2Updated() {
+        return new Operation(
                 2,
                 "iPhone 8",
                 BigDecimal.valueOf(900),

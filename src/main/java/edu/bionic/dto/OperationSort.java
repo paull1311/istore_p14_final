@@ -1,6 +1,6 @@
 package edu.bionic.dto;
 
-public enum  ProductSort {
+public enum OperationSort {
     NAME_ASC,
     NAME_DESC,
     PRICE_ASC,

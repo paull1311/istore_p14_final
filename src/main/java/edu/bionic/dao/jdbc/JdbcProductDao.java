@@ -1,18 +1,15 @@
 package edu.bionic.dao.jdbc;
 
 import edu.bionic.dao.ProductDao;
-import edu.bionic.domain.Color;
-import edu.bionic.domain.Product;
+import edu.bionic.domain.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +17,6 @@ import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
-import java.sql.Types;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +25,7 @@ import java.util.Optional;
 @Transactional
 public class JdbcProductDao implements ProductDao {
 
-    private RowMapper<Product> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Product.class);
+    private RowMapper<Operation> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Operation.class);
 
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -49,13 +45,13 @@ public class JdbcProductDao implements ProductDao {
     }
 
     @Override
-    public List<Product> getAll() {
+    public List<Operation> getAll() {
         String sql = "SELECT * FROM products";
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
-    public List<Product> getAllSortedByName(String name, BigDecimal min, BigDecimal max, boolean desc, int offset, int limit) {
+    public List<Operation> getAllSortedByName(String name, BigDecimal min, BigDecimal max, boolean desc, int offset, int limit) {
         String sql = "SELECT * FROM products WHERE name LIKE :name " +
                 (min == null ? "" : "AND price >= :min ") +
                 (max == null ? "" : "AND price <= :max ") +
@@ -72,7 +68,7 @@ public class JdbcProductDao implements ProductDao {
     }
 
     @Override
-    public List<Product> getAllSortedByPrice(String name, BigDecimal min, BigDecimal max, boolean desc, int offset, int limit) {
+    public List<Operation> getAllSortedByPrice(String name, BigDecimal min, BigDecimal max, boolean desc, int offset, int limit) {
         String sql = "SELECT * FROM products WHERE name LIKE :name " +
                 (min == null ? "" : "AND price >= :min ") +
                 (max == null ? "" : "AND price <= :max ") +
@@ -102,32 +98,32 @@ public class JdbcProductDao implements ProductDao {
     }
 
     @Override
-    public Optional<Product> getById(int productId) {
+    public Optional<Operation> getById(int productId) {
         String sql = "SELECT * FROM products WHERE id = ?";
-        List<Product> product = jdbcTemplate.query(sql, new Object[]{productId}, ROW_MAPPER);
-        return Optional.ofNullable(DataAccessUtils.singleResult(product));
+        List<Operation> operation = jdbcTemplate.query(sql, new Object[]{productId}, ROW_MAPPER);
+        return Optional.ofNullable(DataAccessUtils.singleResult(operation));
     }
 
     @Override
-    public Product save(Product product) {
+    public Operation save(Operation operation) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("id", product.getId())
-                .addValue("name", product.getName())
-                .addValue("price", product.getPrice())
-                .addValue("color", product.getColor().ordinal())
-                .addValue("capacity", product.getCapacity())
-                .addValue("display", product.getDisplay())
-                .addValue("description", product.getDescription());
+                .addValue("id", operation.getId())
+                .addValue("name", operation.getName())
+                .addValue("price", operation.getPrice())
+                .addValue("color", operation.getColor().ordinal())
+                .addValue("capacity", operation.getCapacity())
+                .addValue("display", operation.getDisplay())
+                .addValue("description", operation.getDescription());
 
-        if (product.getId() == null) {
+        if (operation.getId() == null) {
             Number id = productInsert.executeAndReturnKey(parameterSource);
-            product.setId(id.intValue());
+            operation.setId(id.intValue());
         } else {
             String sql = "UPDATE products SET name=:name, price=:price, color=:color, capacity=:capacity, " +
                     "display=:display, description=:description WHERE id=:id";
             namedParameterJdbcTemplate.update(sql, parameterSource);
         }
-        return product;
+        return operation;
     }
 
     @Override
@@ -135,7 +131,7 @@ public class JdbcProductDao implements ProductDao {
         return jdbcTemplate.update("DELETE FROM products WHERE id=?", productId) != 0;
     }
 
-    List<Product> getByOrder(int orderId) {
+    List<Operation> getByOrder(int orderId) {
         String sql = "SELECT * FROM products LEFT JOIN orders_products ON products.id = orders_products.product_id " +
                 "WHERE orders_products.order_id = ?";
         return jdbcTemplate.query(sql, new Object[] {orderId},ROW_MAPPER);

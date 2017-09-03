@@ -4,8 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>${title != null ? "iShop | ".concat(title) : "iShop"}</title>
-
+    <title>${title != null ? "My Cash | ".concat(title) : "My Cash"}</title>
     <%-- http://www.favicon-generator.org --%>
     <link rel="apple-touch-icon" sizes="57x57" href="<c:url value="/resources/img/favicon/apple-icon-57x57.png"/>"/>
     <link rel="apple-touch-icon" sizes="60x60" href="<c:url value="/resources/img/favicon/apple-icon-60x60.png"/>"/>

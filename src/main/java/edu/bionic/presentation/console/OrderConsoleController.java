@@ -1,7 +1,7 @@
 package edu.bionic.presentation.console;
 
+import edu.bionic.domain.Operation;
 import edu.bionic.domain.Order;
-import edu.bionic.domain.Product;
 import edu.bionic.service.OrderService;
 import edu.bionic.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class OrderConsoleController {
     private OrderService orderService;
     private ProductService productService;
 
-    private List<Product> basket = new ArrayList<>();
+    private List<Operation> basket = new ArrayList<>();
 
     @Autowired
     public OrderConsoleController(OrderService orderService, ProductService productService) {
@@ -27,8 +27,8 @@ public class OrderConsoleController {
     }
 
     public void addProductToBasket(int productId) {
-        Product selectedProduct = productService.getById(productId);
-        basket.add(selectedProduct);
+        Operation selectedOperation = productService.getById(productId);
+        basket.add(selectedOperation);
     }
 
     public void printProductsInBasket() {
@@ -41,7 +41,7 @@ public class OrderConsoleController {
 
     public void saveOrder() {
         Order newOrder = new Order(LocalDateTime.now(),
-                basket.stream().map(Product::getPrice).reduce(BigDecimal::add).orElse(BigDecimal.ZERO),
+                basket.stream().map(Operation::getPrice).reduce(BigDecimal::add).orElse(BigDecimal.ZERO),
                 basket);
         orderService.createNewOrder(newOrder);
         basket = new ArrayList<>();
@@ -55,7 +55,7 @@ public class OrderConsoleController {
             System.out.println("Предыдущие заказы:");
             orders.forEach(order -> {
                 System.out.println(order.getDateTime().toString() + ":");
-                order.getProducts().forEach(product -> System.out.println("\t" + product.printInfo()));
+                order.getOperations().forEach(product -> System.out.println("\t" + product.printInfo()));
                 System.out.println("Общая сумма: " + order.getTotalAmount());
             });
             System.out.println();

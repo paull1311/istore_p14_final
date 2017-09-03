@@ -1,8 +1,8 @@
 package edu.bionic.service.impl;
 
 import edu.bionic.dao.ProductDao;
-import edu.bionic.domain.Product;
-import edu.bionic.dto.ProductSort;
+import edu.bionic.domain.Operation;
+import edu.bionic.dto.OperationSort;
 import edu.bionic.service.ProductService;
 import edu.bionic.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,21 +23,21 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getAll() {
+    public List<Operation> getAll() {
         return productDao.getAll();
     }
 
     @Override
-    public List<Product> getAll(String name, BigDecimal min, BigDecimal max, ProductSort productSort, int offset, int limit) {
-        List<Product> result = new ArrayList<>();
-        switch (productSort) {
+    public List<Operation> getAll(String name, BigDecimal min, BigDecimal max, OperationSort operationSort, int offset, int limit) {
+        List<Operation> result = new ArrayList<>();
+        switch (operationSort) {
             case NAME_ASC:
             case NAME_DESC:
-                result = this.productDao.getAllSortedByName(name, min, max, productSort == ProductSort.NAME_DESC, offset, limit);
+                result = this.productDao.getAllSortedByName(name, min, max, operationSort == OperationSort.NAME_DESC, offset, limit);
                 break;
             case PRICE_ASC:
             case PRICE_DESC:
-                result = this.productDao.getAllSortedByPrice(name, min, max, productSort == ProductSort.PRICE_DESC, offset, limit);
+                result = this.productDao.getAllSortedByPrice(name, min, max, operationSort == OperationSort.PRICE_DESC, offset, limit);
                 break;
         }
         return result;
@@ -49,19 +49,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product getById(int productId) {
+    public Operation getById(int productId) {
         return productDao.getById(productId).
                 orElseThrow(() -> new NotFoundException(String.format("Продукт с id=%d не найден", productId)));
     }
 
     @Override
-    public Product create(Product product) {
-        return productDao.save(product);
+    public Operation create(Operation operation) {
+        return productDao.save(operation);
     }
 
     @Override
-    public void update(Product product) {
-        productDao.save(product);
+    public void update(Operation operation) {
+        productDao.save(operation);
     }
 
     @Override

@@ -12,7 +12,7 @@
             <h1 class="text-center">Таблица товаров магазина</h1>
 
             <div class="mt-3 text-center text-sm-right">
-                <a href="<c:url value="/admin/products/new"/>" class="btn btn-dark">
+                <a href="<c:url value="/admin/operations/new"/>" class="btn btn-dark">
                     Добавить товар
                     <i class="fa fa-plus" aria-hidden="true"></i>
                 </a>
@@ -31,23 +31,23 @@
                         <th>Описание</th>
                         <th></th>
                     </tr>
-                    <c:forEach items="${products}" var="product">
+                    <c:forEach items="${operations}" var="operation">
                         <tr>
-                            <td>${product.id}</td>
-                            <%--<td width="50"><img src="/resources/img/product-placeholder.jpg" class="img-thumbnail"></td>--%>
-                            <td>${product.name}</td>
-                            <td>${product.price}</td>
-                            <td>${product.color}</td>
-                            <td>${product.capacity} GB</td>
-                            <td>${product.display}</td>
-                            <td>${product.description}</td>
+                            <td>${operation.id}</td>
+                            <%--<td width="50"><img src="/resources/img/operation-placeholder.jpg" class="img-thumbnail"></td>--%>
+                            <td>${operation.name}</td>
+                            <td>${operation.price}</td>
+                            <td>${operation.color}</td>
+                            <td>${operation.capacity} GB</td>
+                            <td>${operation.display}</td>
+                            <td>${operation.description}</td>
                             <td>
                                 <div class="form-group">
-                                    <a href="<c:url value="/admin/products/${product.id}"/>" class="btn btn-outline-dark btn-block">
+                                    <a href="<c:url value="/admin/operations/${operation.id}"/>" class="btn btn-outline-dark btn-block">
                                         Редактировать
                                     </a>
                                 </div>
-                                <form method="post" action="<c:url value="/admin/products/${product.id}/delete"/>">
+                                <form method="post" action="<c:url value="/admin/operations/${operation.id}/delete"/>">
                                     <button type="submit" class="btn btn-danger btn-block">Удалить</button>
                                 </form>
                             </td>
